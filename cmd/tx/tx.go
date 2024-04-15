@@ -46,7 +46,7 @@ func getTxCmdAdd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			err = state.Persist()
+			_, err = state.Persist()
 			if err != nil {
 				liberrors.HandleError(err)
 				os.Exit(1)

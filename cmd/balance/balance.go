@@ -25,13 +25,13 @@ var balancesListCmd = &cobra.Command{
 		}
 		defer state.Close()
 
-		fmt.Println("Accounts balances:")
-		fmt.Println("__________________")
+		fmt.Println("Accounts balances")
+		fmt.Println("_________________")
 		fmt.Println("")
 
 		if state != nil {
 			for account, balance := range state.Balances {
-				fmt.Printf("%s :	%d\n", account, balance)
+				fmt.Printf("%s : %d\n", account, balance)
 			}
 		}
 	},

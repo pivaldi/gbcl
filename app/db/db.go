@@ -2,20 +2,27 @@ package appdb
 
 import (
 	"bufio"
+	"crypto/sha256"
 	"encoding/json"
+	"fmt"
+	"io"
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"piprim.net/gbcl/app"
 	apptype "piprim.net/gbcl/app/type"
 )
 
 const dbFileMode = 0600
 
+type Snapshot [32]byte
+
 type State struct {
 	Balances  map[apptype.Account]uint
 	txMempool []apptype.Tx
 	dbFile    *os.File
+	snapshot  Snapshot
 }
 
 func (s *State) apply(tx apptype.Tx) error {
@@ -43,26 +50,50 @@ func (s *State) Add(tx apptype.Tx) error {
 	return nil
 }
 
-func (s *State) Persist() error {
-	// Make a copy of mempool because the s.txMempool will be modified
-	// in the loop below
+func (s *State) doSnapshot() error {
+	// Re-read the whole file from the first byte
+	_, err := s.dbFile.Seek(0, 0)
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+
+	txsData, err := io.ReadAll(s.dbFile)
+	if err != nil {
+		return errors.Wrap(err, "")
+	}
+
+	s.snapshot = sha256.Sum256(txsData)
+
+	return nil
+}
+
+func (s *State) Persist() (Snapshot, error) {
 	mempool := make([]apptype.Tx, len(s.txMempool))
+
 	copy(mempool, s.txMempool)
 	for i := 0; i < len(mempool); i++ {
 		txJSON, err := json.Marshal(mempool[i])
 		if err != nil {
-			return errors.Wrap(err, "error persisting database")
-		}
-		if _, err = s.dbFile.Write(append(txJSON, '\n')); err != nil {
-			return errors.Wrap(err, "error persisting database")
+			return Snapshot{}, errors.Wrap(err, "")
 		}
 
-		// TODO: remove this unwanted modification when persisting !
-		// Remove the TX written to a file from the mempool
+		log.Debug().Str("tx", string(txJSON)).Msg("Persisting new TX to disk")
+
+		if _, err = s.dbFile.Write(append(txJSON, '\n')); err != nil {
+			return Snapshot{}, errors.Wrap(err, "")
+		}
+
+		err = s.doSnapshot()
+		if err != nil {
+			return Snapshot{}, err
+		}
+
+		log.Debug().Msg(fmt.Sprintf("New DB Snapshot: %x\n", s.snapshot))
+
 		s.txMempool = s.txMempool[1:]
 	}
 
-	return nil
+	return s.snapshot, nil
 }
 
 func (s *State) Close() {
