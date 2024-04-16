@@ -1,4 +1,4 @@
-package apptype
+package app
 
 type Tx struct {
 	From  Account `json:"from"`

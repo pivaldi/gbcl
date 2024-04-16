@@ -5,11 +5,10 @@ import (
 
 	"github.com/pkg/errors"
 	"piprim.net/gbcl/app"
-	apptype "piprim.net/gbcl/app/type"
 )
 
 type genesis struct {
-	Balances map[apptype.Account]uint `json:"balances"`
+	Balances map[app.Account]uint `json:"balances"`
 }
 
 func loadGenesis() (*genesis, error) {

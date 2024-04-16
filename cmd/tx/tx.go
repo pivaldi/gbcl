@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"piprim.net/gbcl/app"
+	"piprim.net/gbcl/app/account"
 	appdb "piprim.net/gbcl/app/db"
-	"piprim.net/gbcl/app/type/account"
-	"piprim.net/gbcl/app/type/tx"
+	"piprim.net/gbcl/app/tx"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
 

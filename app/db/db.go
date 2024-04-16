@@ -11,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"piprim.net/gbcl/app"
-	apptype "piprim.net/gbcl/app/type"
 )
 
 const dbFileMode = 0600
@@ -19,13 +18,13 @@ const dbFileMode = 0600
 type Snapshot [32]byte
 
 type State struct {
-	Balances  map[apptype.Account]uint
-	txMempool []apptype.Tx
+	Balances  map[app.Account]uint
+	txMempool []app.Tx
 	dbFile    *os.File
 	snapshot  Snapshot
 }
 
-func (s *State) apply(tx apptype.Tx) error {
+func (s *State) apply(tx app.Tx) error {
 	if tx.IsReward() {
 		s.Balances[tx.To] += tx.Value
 		return nil
@@ -41,7 +40,7 @@ func (s *State) apply(tx apptype.Tx) error {
 	return nil
 }
 
-func (s *State) Add(tx apptype.Tx) error {
+func (s *State) Add(tx app.Tx) error {
 	if err := s.apply(tx); err != nil {
 		return err
 	}
@@ -68,7 +67,7 @@ func (s *State) doSnapshot() error {
 }
 
 func (s *State) Persist() (Snapshot, error) {
-	mempool := make([]apptype.Tx, len(s.txMempool))
+	mempool := make([]app.Tx, len(s.txMempool))
 
 	copy(mempool, s.txMempool)
 	for i := 0; i < len(mempool); i++ {
@@ -110,7 +109,7 @@ func NewStateFromDisk() (*State, error) {
 		return nil, err
 	}
 
-	balances := make(map[apptype.Account]uint)
+	balances := make(map[app.Account]uint)
 	for account, balance := range gen.Balances {
 		balances[account] = balance
 	}
@@ -123,7 +122,7 @@ func NewStateFromDisk() (*State, error) {
 	scanner := bufio.NewScanner(f)
 	state := &State{
 		Balances:  balances,
-		txMempool: make([]apptype.Tx, 0),
+		txMempool: make([]app.Tx, 0),
 		dbFile:    f,
 	}
 
@@ -132,7 +131,7 @@ func NewStateFromDisk() (*State, error) {
 			return nil, errors.Wrap(err, "error reading database")
 		}
 
-		var tx apptype.Tx
+		var tx app.Tx
 		err = json.Unmarshal(scanner.Bytes(), &tx)
 		if err != nil {
 			return nil, errors.Wrap(err, "error reading database")

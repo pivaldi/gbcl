@@ -1,3 +1,3 @@
-package apptype
+package app
 
 type Account string
