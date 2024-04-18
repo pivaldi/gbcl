@@ -1,11 +1,26 @@
 package tx
 
 import (
-	"piprim.net/gbcl/app"
+	appaccount "piprim.net/gbcl/app/account"
 )
 
-func New(from, to app.Account, value uint, data string) app.Tx {
-	return app.Tx{
+type Tx struct {
+	From  appaccount.Account `json:"from"`
+	To    appaccount.Account `json:"to"`
+	Value uint               `json:"value"`
+	Data  string             `json:"data"`
+}
+
+func (t *Tx) IsReward() bool {
+	if t == nil {
+		return false
+	}
+
+	return t.Data == "reward"
+}
+
+func New(from, to appaccount.Account, value uint, data string) Tx {
+	return Tx{
 		From:  from,
 		To:    to,
 		Value: value,

@@ -1,14 +1,15 @@
-package appdb
+package db
 
 import (
 	"encoding/json"
 
 	"github.com/pkg/errors"
 	"piprim.net/gbcl/app"
+	appaccount "piprim.net/gbcl/app/account"
 )
 
 type genesis struct {
-	Balances map[app.Account]uint `json:"balances"`
+	Balances map[appaccount.Account]uint `json:"balances"`
 }
 
 func loadGenesis() (*genesis, error) {

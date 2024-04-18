@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	appdb "piprim.net/gbcl/app/db"
+	db "piprim.net/gbcl/app/db"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
 
@@ -18,7 +18,7 @@ var balancesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Lists all balances.",
 	Run: func(_ *cobra.Command, _ []string) {
-		state, err := appdb.NewStateFromDisk()
+		state, err := db.NewStateFromDisk()
 		if err != nil {
 			liberrors.HandleError(err)
 			os.Exit(1)

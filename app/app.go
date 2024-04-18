@@ -54,7 +54,7 @@ func Init() error {
 	err := createRootDir()
 
 	if config.DBFilePath == "" {
-		config.DBFilePath = filepath.Join(config.RootDirectory, "db", "db.txt")
+		config.DBFilePath = filepath.Join(config.RootDirectory, "db", "block.db")
 	}
 
 	isInit = true

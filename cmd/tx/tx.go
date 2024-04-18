@@ -5,9 +5,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"piprim.net/gbcl/app"
-	"piprim.net/gbcl/app/account"
-	appdb "piprim.net/gbcl/app/db"
-	"piprim.net/gbcl/app/tx"
+	appaccount "piprim.net/gbcl/app/account"
+	db "piprim.net/gbcl/app/db"
+	tx "piprim.net/gbcl/app/tx"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
 
@@ -31,9 +31,9 @@ func getTxCmdAdd() *cobra.Command {
 			value, _ := cmd.Flags().GetUint(flagValue)
 			data, _ := cmd.Flags().GetString(flagData)
 
-			tx := tx.New(account.New(from), account.New(to), value, data)
+			tx := tx.New(appaccount.New(from), appaccount.New(to), value, data)
 
-			state, err := appdb.NewStateFromDisk()
+			state, err := db.NewStateFromDisk()
 			if err != nil {
 				liberrors.HandleError(err)
 				os.Exit(1)
