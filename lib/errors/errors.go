@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -40,16 +41,37 @@ func HandleError(err error) (b bool) {
 	if err != nil {
 		// notice that we're using 1, so it will actually log the where
 		// the error happened, 0 = this function, we don't want that.
-		// pc, filename, line, _ := runtime.Caller(1)
+		pc, filename, line, _ := runtime.Caller(1)
 
-		// log.Error().Stack().Err(err).
-		// 	Str("package", runtime.FuncForPC(pc).Name()).
-		// 	Str("file", fmt.Sprintf("%s:%d", filename, line)).
-		// 	Send()
+		log.Error().Stack().Err(err).
+			Str("package", runtime.FuncForPC(pc).Name()).
+			Str("file", fmt.Sprintf("%s:%d", filename, line)).
+			Send()
 
-		log.Error().Stack().Err(err).Send()
+		// log.Error().Err(err).Stack().Send()
 
 		b = true
+		panic(err)
+	}
+
+	return
+}
+
+// HandleErrorExit is a fansy log error handler and exit on error
+func HandleErrorExit(err error) (b bool) {
+	if err != nil {
+		HandleError(err)
+		os.Exit(1)
+	}
+
+	return
+}
+
+// HandleErrorPanic is a fansy log error handler and panic on error
+func HandleErrorPanic(err error) (b bool) {
+	if err != nil {
+		HandleError(err)
+		panic(err)
 	}
 
 	return

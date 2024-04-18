@@ -1,23 +1,25 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"time"
 
+	"piprim.net/gbcl/app"
 	"piprim.net/gbcl/app/db"
 	dbblock "piprim.net/gbcl/app/db/block"
 	"piprim.net/gbcl/app/tx"
 	apptype "piprim.net/gbcl/app/type"
-	liberrors "piprim.net/gbcl/lib/errors"
 )
 
 //nolint:gomnd // Because one shot script
 func main() {
+	err := app.Init("")
+	if err != nil {
+		panic(err)
+	}
+
 	state, err := db.NewStateFromDisk()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		panic(err)
 	}
 	defer state.Close()
 
@@ -32,7 +34,7 @@ func main() {
 
 	err = state.AddBlock(block0)
 	if err != nil {
-		liberrors.HandleError(err)
+		panic(err)
 	}
 
 	block0hash, _ := state.Persist()
@@ -52,11 +54,11 @@ func main() {
 
 	err = state.AddBlock(block1)
 	if err != nil {
-		liberrors.HandleError(err)
+		panic(err)
 	}
 
 	_, err = state.Persist()
 	if err != nil {
-		liberrors.HandleError(err)
+		panic(err)
 	}
 }

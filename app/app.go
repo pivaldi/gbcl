@@ -5,75 +5,58 @@ import (
 	"os"
 	"path/filepath"
 
-	"embed"
-
 	"github.com/pkg/errors"
-
-	"github.com/rs/zerolog/log"
-	liberrors "piprim.net/gbcl/lib/errors"
-	libfile "piprim.net/gbcl/lib/file"
+	"piprim.net/gbcl/app/config"
+	"piprim.net/gbcl/app/db"
 )
 
 const Major = "0"
 const Minor = "1"
 const Fix = "0"
 const Verbal = "TX Add && Balances List"
+const Name = "gbcl"
+const ShortDescription = "The Blockchain learning CLI"
 
 var isInit bool
 
-//go:embed etc/db/genesis.json
-var FS embed.FS
-
 func GetVersion() string {
-	return fmt.Sprintf("%s version : %s.%s.%s-beta %s", config.Name, Major, Minor, Fix, Verbal)
+	return fmt.Sprintf("%s version : %s.%s.%s-beta %s", Name, Major, Minor, Fix, Verbal)
 }
 
 func Message(msg string) {
 	fmt.Println(msg)
 }
 
-func Init() error {
+func Init(dataDir string) error {
 	if isInit {
-		log.Debug().Msg("App is already initialized…")
 		return nil
 	}
 
-	liberrors.InitLog()
-	config.Name = "gbcl"
-	config.ShortDescription = "The Blockchain learning CLI"
+	conf := new(config.Config)
 
-	if config.RootDirectory == "" {
+	if dataDir == "" {
 		dirname, err := os.UserHomeDir()
+
 		if err != nil {
 			return errors.Wrap(err, "app initialisation error")
 		}
 
-		config.RootDirectory = filepath.Join(dirname, "."+config.Name)
+		dataDir = filepath.Join(dirname, "."+Name)
 	}
 
-	err := createRootDir()
+	err := conf.SetDataDirectory(dataDir)
+	if err != nil {
+		return errors.Wrap(err, "app error on init")
+	}
 
-	if config.DBFilePath == "" {
-		config.DBFilePath = filepath.Join(config.RootDirectory, "db", "block.db")
+	config.Init(conf)
+
+	err = db.Init()
+	if err != nil {
+		return err
 	}
 
 	isInit = true
-
-	return err
-}
-
-func createRootDir() error {
-	err := libfile.CreateDirIfNotExists(config.RootDirectory)
-	if err != nil {
-		return errors.Wrap(err, "")
-	}
-
-	for _, path := range []string{"db"} {
-		err := libfile.CreateDirIfNotExists(filepath.Join(config.RootDirectory, path))
-		if err != nil {
-			return errors.Wrap(err, "")
-		}
-	}
 
 	return nil
 }

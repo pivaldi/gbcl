@@ -8,11 +8,12 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"piprim.net/gbcl/app"
 	appaccount "piprim.net/gbcl/app/account"
+	"piprim.net/gbcl/app/config"
 	dbblock "piprim.net/gbcl/app/db/block"
 	tx "piprim.net/gbcl/app/tx"
 	apptype "piprim.net/gbcl/app/type"
+	libfile "piprim.net/gbcl/lib/file"
 )
 
 type State struct {
@@ -96,9 +97,9 @@ func (s *State) Close() {
 }
 
 func NewStateFromDisk() (*State, error) {
-	config := app.GetConfig()
+	conf := config.Get()
 
-	gen, err := loadGenesis()
+	gen, err := getGenesisFromMemory()
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func NewStateFromDisk() (*State, error) {
 		balances[account] = balance
 	}
 
-	f, err := os.OpenFile(config.DBFilePath, os.O_CREATE|os.O_APPEND|os.O_RDWR, dbFileMode)
+	f, err := os.OpenFile(conf.GetDBFilePath(), os.O_CREATE|os.O_APPEND|os.O_RDWR, libfile.GetDefaultFileMode())
 	if err != nil {
 		return nil, errors.Wrap(err, "error reading database")
 	}

@@ -52,9 +52,19 @@ func CreateTargetDirIfNotExists(path string) (err error) {
 }
 
 var (
-	defaultPermsNum = 0775
-	defaultPerms    = fs.FileMode(defaultPermsNum)
+	defaultPermsNumFile = 0600
+	defaultPermsNumDir  = 0700
+	defaultPermsFile    = fs.FileMode(defaultPermsNumFile)
+	defaultPermsDir     = fs.FileMode(defaultPermsNumDir)
 )
+
+func GetDefaultFileMode() fs.FileMode {
+	return defaultPermsFile
+}
+
+func GetDefaultDirMode() fs.FileMode {
+	return defaultPermsDir
+}
 
 // CreateDirIfNotExists ensures that the target directory
 // of the directory exists, creating it if it does not exist.
@@ -64,7 +74,7 @@ func CreateDirIfNotExists(path string) (err error) {
 	}
 
 	if !Exists(path) {
-		if err = os.MkdirAll(path, defaultPerms); err != nil {
+		if err = os.MkdirAll(path, defaultPermsDir); err != nil {
 			return
 		}
 	}

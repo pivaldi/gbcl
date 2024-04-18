@@ -2,10 +2,11 @@ package cmdbalance
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
+	"piprim.net/gbcl/app"
 	db "piprim.net/gbcl/app/db"
+	"piprim.net/gbcl/cmd"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
 
@@ -17,12 +18,15 @@ var balancesCmd = &cobra.Command{
 var balancesListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Lists all balances.",
-	Run: func(_ *cobra.Command, _ []string) {
+	Run: func(c *cobra.Command, _ []string) {
+		dataDir, err := c.Flags().GetString(cmd.FlagDataDir)
+		liberrors.HandleErrorExit(err)
+
+		err = app.Init(dataDir)
+		liberrors.HandleErrorExit(err)
+
 		state, err := db.NewStateFromDisk()
-		if err != nil {
-			liberrors.HandleError(err)
-			os.Exit(1)
-		}
+		liberrors.HandleErrorExit(err)
 		defer state.Close()
 
 		fmt.Println("Accounts balances")
@@ -38,7 +42,7 @@ var balancesListCmd = &cobra.Command{
 }
 
 func GetRootCmd() *cobra.Command {
-	balancesCmd.AddCommand(balancesListCmd)
+	balancesCmd.AddCommand(cmd.AddDataDirFlags(balancesListCmd))
 
 	return balancesCmd
 }
