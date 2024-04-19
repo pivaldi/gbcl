@@ -23,6 +23,10 @@ type State struct {
 	latestBlockHash apptype.Hash
 }
 
+func (s *State) LatestBlockHash() apptype.Hash {
+	return s.latestBlockHash
+}
+
 func (s *State) apply(txv tx.Tx) error {
 	if txv.IsReward() {
 		s.Balances[txv.To] += txv.Value
@@ -39,7 +43,7 @@ func (s *State) apply(txv tx.Tx) error {
 	return nil
 }
 
-func (s *State) Add(t tx.Tx) error {
+func (s *State) AddTx(t tx.Tx) error {
 	if err := s.apply(t); err != nil {
 		return err
 	}
@@ -50,7 +54,7 @@ func (s *State) Add(t tx.Tx) error {
 
 func (s *State) AddBlock(b dbblock.Block) error {
 	for _, tx := range b.TXs {
-		if err := s.Add(tx); err != nil {
+		if err := s.AddTx(tx); err != nil {
 			return err
 		}
 	}

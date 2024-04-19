@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"piprim.net/gbcl/app"
 	cmdbalance "piprim.net/gbcl/cmd/balance"
-	cmdtx "piprim.net/gbcl/cmd/tx"
+	cmdnode "piprim.net/gbcl/cmd/node"
 	cmdversion "piprim.net/gbcl/cmd/version"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
@@ -16,7 +16,6 @@ func main() {
 
 	err := gbclCmd.Execute()
 	liberrors.HandleErrorExit(err)
-
 }
 
 func initCmd() {
@@ -30,5 +29,6 @@ func initCmd() {
 
 	gbclCmd.AddCommand(cmdversion.GetRootCmd())
 	gbclCmd.AddCommand(cmdbalance.GetRootCmd())
-	gbclCmd.AddCommand(cmdtx.GetRootCmd())
+	gbclCmd.AddCommand(cmdnode.GetRootCmd())
+	// gbclCmd.AddCommand(cmdtx.GetRootCmd())
 }

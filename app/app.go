@@ -8,14 +8,17 @@ import (
 	"github.com/pkg/errors"
 	"piprim.net/gbcl/app/config"
 	"piprim.net/gbcl/app/db"
+	"piprim.net/gbcl/app/node"
 )
 
-const Major = "0"
-const Minor = "1"
-const Fix = "0"
-const Verbal = "TX Add && Balances List"
-const Name = "gbcl"
-const ShortDescription = "The Blockchain learning CLI"
+const (
+	Major            = "0"
+	Minor            = "1"
+	Fix              = "0"
+	Verbal           = "TX Add && Balances List"
+	Name             = "gbcl"
+	ShortDescription = "The Blockchain learning CLI"
+)
 
 var isInit bool
 
@@ -49,6 +52,7 @@ func Init(dataDir string) error {
 		return errors.Wrap(err, "app error on init")
 	}
 
+	conf.SetPort(node.DefaultPort)
 	config.Init(conf)
 
 	err = db.Init()
