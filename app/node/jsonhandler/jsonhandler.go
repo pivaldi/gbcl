@@ -1,9 +1,12 @@
 package jsonhandler
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"piprim.net/gbcl/app/account"
 	"piprim.net/gbcl/app/db"
+	dbblock "piprim.net/gbcl/app/db/block"
 	"piprim.net/gbcl/app/tx"
 	apptype "piprim.net/gbcl/app/type"
 )
@@ -30,17 +33,16 @@ type BalancesResp struct {
 func TxAdd(txr *TxAddReq) (*TxAddResp, error) {
 	ttx := tx.New(account.New(txr.From), account.New(txr.To), txr.Value, txr.Data)
 
-	err := State.AddTx(ttx)
-	if err != nil {
-		return nil, errors.Wrap(err, "error adding tx to state")
-	}
+	block := dbblock.New(
+		State.LatestBlockHash(),
+		State.NextBlockNumber(),
+		uint64(time.Now().Unix()),
+		[]tx.Tx{ttx},
+	)
 
-	hash, err := State.Persist()
-	if err != nil {
-		return nil, errors.Wrap(err, "error persisting state")
-	}
+	hash, err := State.AddBlock(block)
 
-	return &TxAddResp{hash}, nil
+	return &TxAddResp{*hash}, errors.Wrap(err, "adding block")
 }
 
 func ListBalances(_ *struct{}) (*BalancesResp, error) {

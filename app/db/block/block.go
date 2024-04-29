@@ -11,6 +11,7 @@ import (
 
 type Header struct {
 	Parent apptype.Hash // parent block reference
+	Number uint64       `json:"number"`
 	Time   uint64
 }
 
@@ -25,10 +26,14 @@ func (b *Block) Hash() (apptype.Hash, error) {
 	return sha256.Sum256(blockJSON), errors.Wrap(err, "")
 }
 
-func New(parent apptype.Hash, time uint64, txs []tx.Tx) Block {
+func New(parent apptype.Hash, height, time uint64, txs []tx.Tx) Block {
 	return Block{
-		Header: Header{Parent: parent, Time: time},
-		TXs:    txs,
+		Header: Header{
+			Parent: parent,
+			Number: height,
+			Time:   time,
+		},
+		TXs: txs,
 	}
 }
 

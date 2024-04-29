@@ -25,6 +25,7 @@ func main() {
 
 	block0 := dbblock.New(
 		apptype.Hash{},
+		state.NextBlockNumber(),
 		uint64(time.Now().Unix()),
 		[]tx.Tx{
 			tx.New("root", "root", 3, ""),
@@ -32,15 +33,14 @@ func main() {
 		},
 	)
 
-	err = state.AddBlock(block0)
+	hash0, err := state.AddBlock(block0)
 	if err != nil {
 		panic(err)
 	}
 
-	block0hash, _ := state.Persist()
-
 	block1 := dbblock.New(
-		block0hash,
+		*hash0,
+		state.NextBlockNumber(),
 		uint64(time.Now().Unix()),
 		[]tx.Tx{
 			tx.New("root", "babayaga", 2000, ""),
@@ -52,12 +52,21 @@ func main() {
 		},
 	)
 
-	err = state.AddBlock(block1)
+	hash1, err := state.AddBlock(block1)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = state.Persist()
+	block2 := dbblock.New(
+		*hash1,
+		state.NextBlockNumber(),
+		uint64(time.Now().Unix()),
+		[]tx.Tx{
+			tx.New("root", "root", 24700, "reward"),
+		},
+	)
+
+	_, err = state.AddBlock(block2)
 	if err != nil {
 		panic(err)
 	}

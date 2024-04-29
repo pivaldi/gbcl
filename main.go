@@ -8,7 +8,6 @@ import (
 	gcmd "piprim.net/gbcl/cmd"
 	cmdbalance "piprim.net/gbcl/cmd/balance"
 	cmdnode "piprim.net/gbcl/cmd/node"
-	cmdtx "piprim.net/gbcl/cmd/tx"
 	cmdversion "piprim.net/gbcl/cmd/version"
 	liberrors "piprim.net/gbcl/lib/errors"
 )
@@ -46,5 +45,4 @@ func initCmd() {
 	gbclCmd.AddCommand(cmdversion.GetRootCmd())
 	gbclCmd.AddCommand(cmdbalance.GetRootCmd())
 	gbclCmd.AddCommand(cmdnode.GetRootCmd())
-	gbclCmd.AddCommand(cmdtx.GetRootCmd())
 }
