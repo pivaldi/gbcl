@@ -42,7 +42,6 @@ var balancesListCmd = &cobra.Command{
 }
 
 func GetRootCmd() *cobra.Command {
-	balancesCmd.AddCommand(cmd.AddDataDirFlags(balancesListCmd))
-
+	balancesCmd.AddCommand(balancesListCmd)
 	return balancesCmd
 }

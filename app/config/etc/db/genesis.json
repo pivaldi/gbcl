@@ -1,0 +1,7 @@
+{
+  "genesisTime": "2024-01-01T00:00:00.000000000Z",
+  "chainId": "Go-BlockChain-Learning-ledger",
+  "balances": {
+    "root": 1000000
+  }
+}
