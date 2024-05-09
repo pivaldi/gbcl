@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"piprim.net/gbcl/app/config"
 	"piprim.net/gbcl/app/db"
-	"piprim.net/gbcl/app/node/jsonhandler"
+	"piprim.net/gbcl/node/jsonhandler"
 )
 
 const (
@@ -34,6 +34,7 @@ func Run() error {
 
 	http.HandleFunc("/balances/list", jsonHandlerFunc(jsonhandler.ListBalances))
 	http.HandleFunc("/tx/add", jsonHandlerFunc(jsonhandler.TxAdd))
+	http.HandleFunc("/node/status", jsonHandlerFunc(jsonhandler.Status))
 
 	port := config.Get().GetPort()
 	log.Debug().Msg(fmt.Sprintf("Launching GBCL node and its HTTP API on http://localhost:%d", port))

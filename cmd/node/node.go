@@ -2,8 +2,8 @@ package cmdnode
 
 import (
 	"github.com/spf13/cobra"
-	"piprim.net/gbcl/app/node"
 	liberrors "piprim.net/gbcl/lib/errors"
+	"piprim.net/gbcl/node"
 )
 
 var nodeCmd = &cobra.Command{

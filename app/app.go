@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"piprim.net/gbcl/app/config"
 	"piprim.net/gbcl/app/db"
-	"piprim.net/gbcl/app/node"
+	"piprim.net/gbcl/node"
 )
 
 const (

@@ -30,6 +30,11 @@ type BalancesResp struct {
 	Balances map[account.Account]uint `json:"balances"`
 }
 
+type StatusRes struct {
+	Hash   apptype.Hash `json:"blockHash"`
+	Number uint64       `json:"blockNumber"`
+}
+
 func TxAdd(txr *TxAddReq) (*TxAddResp, error) {
 	ttx := tx.New(account.New(txr.From), account.New(txr.To), txr.Value, txr.Data)
 
@@ -49,5 +54,12 @@ func ListBalances(_ *struct{}) (*BalancesResp, error) {
 	return &BalancesResp{
 		Hash:     State.LatestBlockHash(),
 		Balances: State.Balances,
+	}, nil
+}
+
+func Status(_ *struct{}) (*StatusRes, error) {
+	return &StatusRes{
+		Hash:   State.LatestBlockHash(),
+		Number: State.LatestBlock().Header.Number,
 	}, nil
 }
